@@ -80,6 +80,11 @@ alter table public.votes enable row level security;
 alter table public.captcha_used enable row level security;
 alter table public.login_attempts enable row level security;
 
+-- Berikan hak akses ke service_role (dipakai oleh Vercel serverless functions).
+grant usage on schema public to service_role;
+grant all on all tables in schema public to service_role;
+grant all on all sequences in schema public to service_role;
+
 -- Data awal paslon (boleh diubah/dihapus lewat panel admin)
 insert into public.paslon (number, ketua, wakil, kelas, visi, misi)
 select 1, 'Nama Ketua 1', 'Nama Wakil 1', 'XI RPL 1',
