@@ -13,6 +13,7 @@ let voteStep = 1;
 let draft = null;
 let receipt = null;
 let justVoted = false;
+let loadFailed = false;
 const captcha = {
   vote: { token: '', img: null, input: null },
   login: { token: '', img: null, input: null }
@@ -158,6 +159,7 @@ function receiptBox(title, message, extra = '') {
 }
 
 function renderVoting() {
+  if (loadFailed) return;
   const cfg = publicData.config || {};
   $('#votingPeriodText').textContent =
     `${cfg.title || 'Pilketos'} · ${publicData.candidates.length} paslon · Periode: ${cfg.period || '—'}`;
@@ -601,6 +603,7 @@ document.addEventListener('click', (e) => {
     });
   }
   if (e.target.id === 'resetVotesBtn') return resetVotes();
+  if (e.target.id === 'retryLoad') return location.reload();
   if (e.target.id === 'exportBtn') {
     return safeAdmin(async () => {
       const response = await fetch('/api/admin/export', { credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } });
@@ -670,7 +673,13 @@ window.addEventListener('hashchange', renderRoute);
   try {
     await Promise.all([refreshCaptcha('login'), loadPublic()]);
   } catch (err) {
+    loadFailed = true;
     toast(err.message || 'Gagal memuat data.', 'err');
+    $('#votingContent').innerHTML = `
+      <div class="wizard-body">
+        <div class="notice notice-warn"><span>⚠</span><div><strong>Data belum tersedia.</strong> Server voting belum siap atau sedang gangguan. Silakan coba lagi beberapa saat.</div></div>
+        <div class="wizard-actions" style="justify-content:center"><button class="btn btn-outline" id="retryLoad">↻ Coba Lagi</button></div>
+      </div>`;
   }
   renderRoute();
 })();
