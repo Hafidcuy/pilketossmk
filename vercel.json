@@ -1,6 +1,5 @@
 {
   "framework": null,
-  "publicDirectory": "public",
   "cleanUrls": true,
   "headers": [
     {
