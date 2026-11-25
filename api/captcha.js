@@ -4,6 +4,6 @@ import { createCaptcha } from '../lib/captcha.js';
 export default async function handler(req, res) {
   try {
     method(req, ['GET']);
-    send(res, 200, { ok: true, ...createCaptcha() });
+    send(res, 200, { ok: true, ...(await createCaptcha()) });
   } catch (err) { errorResponse(res, err); }
 }
