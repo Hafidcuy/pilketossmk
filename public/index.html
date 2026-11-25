@@ -33,7 +33,9 @@
         <a href="#hasil" data-route="hasil">Hasil</a>
         <a href="#admin" data-route="admin">Admin</a>
       </nav>
-      <button class="menu-toggle" id="menuToggle" aria-label="Buka menu" aria-expanded="false">☰</button>
+      <button class="menu-toggle" id="menuToggle" aria-label="Buka menu" aria-expanded="false">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
     </div>
   </header>
 
@@ -83,19 +85,19 @@
         </div>
 
         <div id="adminLogin" class="admin-login">
-          <div class="login-icon">🔒</div>
+          <div class="login-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div>
           <h3>Masuk ke Panel Admin</h3>
           <p>Masukkan PIN admin untuk mengelola Pilketos.</p>
           <form id="loginForm" class="login-form" autocomplete="off">
             <input type="password" id="pinInput" placeholder="Masukkan PIN admin" autocomplete="off" required>
             <div class="captcha-row">
               <img id="loginCaptcha" width="160" height="46" alt="Kode captcha login" title="Klik untuk mengganti kode">
-              <button type="button" class="icon-btn" id="refreshLoginCaptcha" title="Ganti kode captcha" aria-label="Ganti kode captcha">↻</button>
+              <button type="button" class="btn btn-outline btn-sm" id="refreshLoginCaptcha" title="Ganti kode captcha">Ganti</button>
             </div>
             <input type="text" id="loginCaptchaInput" placeholder="Masukkan kode captcha di atas" autocomplete="off" maxlength="8" required>
             <button class="btn btn-primary" type="submit">Masuk</button>
           </form>
-          <div class="login-note" id="loginSecurityNote">PIN awal: <strong>krian1</strong> — segera ubah di menu Pengaturan.</div>
+          <div class="login-note" id="loginSecurityNote">Masukkan PIN yang diberikan panitia. Jangan bagikan PIN kepada siapa pun.</div>
           <small>Jangan pernah bagikan PIN kepada siapa pun. Panitia tidak meminta PIN lewat pesan/dm.</small>
         </div>
 
@@ -135,8 +137,8 @@
                 <div class="admin-card-head"><div><h3>Data Suara</h3><p>Rekap langsung &amp; pengelolaan data.</p></div></div>
                 <div id="adminLiveRecap" class="live-recap"></div>
                 <div class="danger-actions">
-                  <button class="btn btn-outline btn-sm" id="exportBtn">↧ Ekspor Data (.json)</button>
-                  <button class="btn btn-danger btn-sm" id="resetVotesBtn">♻ Reset Semua Suara</button>
+                  <button class="btn btn-outline btn-sm" id="exportBtn">Unduh Data (.json)</button>
+                  <button class="btn btn-danger btn-sm" id="resetVotesBtn">Reset Semua Suara</button>
                 </div>
                 <p class="danger-note">Reset menghapus seluruh suara, membatalkan hasil terbit, dan membuka hak pilih kembali.</p>
               </div>
@@ -148,7 +150,10 @@
   </main>
 
   <footer class="site-footer">
-    <div class="container security-strip"><span>🔒</span> Pastikan kamu membuka alamat website resmi sekolah. Jangan pernah membagikan PIN admin atau kode voting kepada pihak mana pun.</div>
+    <div class="container security-strip">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+      Pastikan kamu membuka alamat website resmi sekolah. Jangan pernah membagikan PIN admin atau kode voting kepada pihak mana pun.
+    </div>
     <div class="container footer-bottom">
       <span>© <span id="year"></span> SMK Krian 1 Sidoarjo · Website Pilketos</span>
       <span><a href="#voting">Voting</a> · <a href="#hasil">Hasil</a> · <a href="#admin">Admin</a></span>

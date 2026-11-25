@@ -138,6 +138,8 @@ button { cursor: pointer; }
 .notice { border-radius: 11px; padding: 12px 14px; font-size: 12.5px; display: flex; gap: 9px; align-items: flex-start; }
 .notice-info { background: rgba(47,87,239,.07); color: #34508f; border: 1px solid rgba(47,87,239,.16); }
 .notice-warn { background: rgba(255,143,60,.10); color: #9a5a20; border: 1px solid rgba(255,143,60,.24); }
+.notice > span:first-child { flex: none; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; background: rgba(47,87,239,.15); color: var(--primary); font-size: 11px; font-weight: 800; }
+.notice-warn > span:first-child { background: rgba(255,143,60,.20); color: #9a5a20; }
 .confirm-box { background: linear-gradient(135deg, rgba(47,87,239,.07), rgba(185,102,231,.07)); border: 1px solid rgba(47,87,239,.16); border-radius: 17px; padding: 24px; text-align: center; }
 .confirm-avatar { width: 76px; height: 76px; margin: 0 auto 12px; border-radius: 16px; background: #fff; box-shadow: var(--shadow); display: grid; place-items: center; font-size: 24px; font-weight: 800; color: var(--primary); overflow: hidden; }
 .confirm-avatar img { width: 100%; height: 100%; object-fit: cover; }
@@ -235,6 +237,12 @@ button { cursor: pointer; }
 .modal-box h2 { font-size: 21px; padding-right: 34px; }
 .modal-form { display: grid; gap: 13px; margin-top: 16px; }
 .modal-form textarea { resize: vertical; }
+.foto-upload { display: flex; gap: 12px; align-items: flex-start; margin-top: 7px; }
+.foto-preview { width: 76px; height: 76px; border-radius: 12px; object-fit: cover; border: 1px solid var(--line); background: #f7f9fc; flex: none; }
+.foto-preview:not([src]) { background: #f7f9fc; }
+.foto-actions { display: grid; gap: 6px; min-width: 0; }
+.foto-actions input[type="file"] { max-width: 100%; font-size: 11.5px; }
+.foto-info { font-size: 11px; color: #8c95a7; }
 .modal-actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 8px; }
 .confirm-modal-text { font-size: 13px; margin: 12px 0 20px; }
 .toast-wrap { position: fixed; right: 18px; bottom: 18px; z-index: 200; display: grid; gap: 9px; }
@@ -310,6 +318,10 @@ button { cursor: pointer; }
   .receipt strong { font-size: 13px; }
   .admin-card { padding: 17px; }
   .admin-toolbar { padding: 15px; }
+  .foto-upload { flex-direction: column; align-items: stretch; }
+  .foto-preview { width: 88px; height: 88px; }
+  .admin-paslon-actions { width: 100%; }
+  .admin-paslon-actions .btn { flex: 1; }
   .footer-bottom { font-size: 10.5px; }
 }
 

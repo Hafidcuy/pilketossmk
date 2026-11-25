@@ -132,6 +132,44 @@ function formatDate(iso) {
   catch { return String(iso); }
 }
 
+/* Kompres foto di browser agar ringan untuk HP & upload cepat. */
+function compressImage(file) {
+  return new Promise((resolve, reject) => {
+    if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
+      return reject(new Error('Format foto harus PNG, JPG, atau WebP.'));
+    }
+    if (file.size > 8 * 1024 * 1024) {
+      return reject(new Error('Foto sumber terlalu besar (maks. 8 MB).'));
+    }
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('Gagal membaca berkas foto.'));
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error('Gambar tidak bisa dibuka.'));
+      img.onload = () => {
+        const max = 512;
+        const scale = Math.min(1, max / Math.max(img.width, img.height));
+        const width = Math.max(1, Math.round(img.width * scale));
+        const height = Math.max(1, Math.round(img.height * scale));
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, width, height);
+        ctx.drawImage(img, 0, 0, width, height);
+        const data = canvas.toDataURL('image/jpeg', 0.8);
+        if (data.length > 380000) {
+          return reject(new Error('Foto masih terlalu besar. Coba gambar yang lebih sederhana.'));
+        }
+        resolve(data);
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 /* ------------------ Voting ------------------ */
 function setProgress(step) {
   $$('[data-progress]').forEach((el) => {
@@ -145,7 +183,7 @@ function receiptBox(title, message, extra = '') {
   return `
     <div class="wizard-body">
       <div class="${justVoted ? 'success-box' : 'already-box'}">
-        <div class="success-icon">✓</div>
+        <div class="success-icon"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg></div>
         <h2>${esc(title)}</h2>
         <p>${esc(message)}</p>
         <div class="receipt"><div><small>Bukti voting</small><strong>${esc(receipt)}</strong></div></div>
@@ -182,7 +220,7 @@ function renderVoting() {
     setProgress(1);
     content.innerHTML = `
       <div class="wizard-body">
-        <div class="notice notice-warn" style="margin-bottom:18px"><span>⏸</span><div><strong>Voting sedang ditutup.</strong> Hubungi panitia untuk informasi lebih lanjut.</div></div>
+        <div class="notice notice-warn" style="margin-bottom:18px"><span>!</span><div><strong>Voting sedang ditutup.</strong> Hubungi panitia untuk informasi lebih lanjut.</div></div>
         <div class="wizard-actions"><button class="btn btn-outline" data-go="admin">Buka Panel Admin</button></div>
       </div>`;
     return;
@@ -240,13 +278,13 @@ function renderVoting() {
             <label for="voteCaptchaInput">Kode keamanan (captcha)</label>
             <div class="captcha-row">
               <img id="voteCaptcha" width="160" height="46" alt="Kode captcha voting" title="Klik untuk mengganti kode">
-              <button type="button" class="icon-btn" id="refreshVoteCaptcha" title="Ganti kode captcha" aria-label="Ganti kode captcha">↻</button>
+              <button type="button" class="btn btn-outline btn-sm" id="refreshVoteCaptcha" title="Ganti kode captcha">Ganti</button>
             </div>
             <input id="voteCaptchaInput" type="text" maxlength="8" placeholder="Masukkan kode di atas" autocomplete="off" required>
             <div class="field-hint">Kode diverifikasi server dan hanya bisa dipakai sekali.</div>
           </div>
           <input class="honeypot" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
-          <div class="notice notice-info"><span>🔒</span><div>Pastikan alamat website resmi sekolah. Jangan pernah membagikan kode atau PIN kepada siapa pun.</div></div>
+          <div class="notice notice-info"><span>i</span><div>Pastikan alamat website resmi sekolah. Jangan pernah membagikan kode atau PIN kepada siapa pun.</div></div>
           <div class="wizard-actions"><button type="submit" class="btn btn-primary" ${publicData.candidates.length ? '' : 'disabled'}>Lanjut Konfirmasi →</button></div>
         </form>
       </div>`;
@@ -273,10 +311,10 @@ function renderVoting() {
             <div class="confirm-row"><span>Jurusan</span><strong>${esc(draft.jurusan)}</strong></div>
           </div>
         </div>
-        <div class="notice notice-warn" style="margin-top:16px"><span>⚠</span><div><strong>Pilihan bersifat final.</strong> Kamu tidak dapat mengulang voting dengan identitas yang sama.</div></div>
+        <div class="notice notice-warn" style="margin-top:16px"><span>!</span><div><strong>Pilihan bersifat final.</strong> Kamu tidak dapat mengulang voting dengan identitas yang sama.</div></div>
         <div class="wizard-actions">
           <button class="btn btn-outline" id="backVoteBtn">← Kembali</button>
-          <button class="btn btn-primary" id="confirmVoteBtn">Konfirmasi &amp; Kirim Suara ✓</button>
+          <button class="btn btn-primary" id="confirmVoteBtn">Konfirmasi &amp; Kirim Suara</button>
         </div>
       </div>`;
     return;
@@ -338,9 +376,9 @@ function resultsCards(counts, total, label) {
   const leader = list[0] && (counts[list[0].id] || 0) > 0 ? paslonName(list[0]) : '—';
   return `
     <div class="results-summary">
-      <div class="summary-box"><span class="summary-ico">✓</span><div><strong>${total}</strong><small>Total Suara</small></div></div>
+      <div class="summary-box"><span class="summary-ico">OK</span><div><strong>${total}</strong><small>Total Suara</small></div></div>
       <div class="summary-box"><span class="summary-ico">${String(list.length).padStart(2, '0')}</span><div><strong>${list.length}</strong><small>Jumlah Paslon</small></div></div>
-      <div class="summary-box"><span class="summary-ico">★</span><div><strong style="font-size:15px">${esc(leader)}</strong><small>Sementara Memimpin</small></div></div>
+      <div class="summary-box"><span class="summary-ico">#1</span><div><strong style="font-size:15px">${esc(leader)}</strong><small>Sementara Memimpin</small></div></div>
     </div>
     <div class="results-card">
       ${list.map((c, i) => {
@@ -349,7 +387,7 @@ function resultsCards(counts, total, label) {
         return `
           <div class="result-item">
             <div class="result-top">
-              <div class="result-rank ${i === 0 && count > 0 ? 'first' : ''}">${i === 0 && count > 0 ? '★' : i + 1}</div>
+              <div class="result-rank ${i === 0 && count > 0 ? 'first' : ''}">${i + 1}</div>
               ${avatarHTML(c, 'result-avatar')}
               <div class="result-name"><strong>${esc(paslonLabel(c))}</strong><small>${esc(c.kelas || '—')}</small></div>
               <div class="result-count"><strong>${count}</strong><small>suara · ${percent}%</small></div>
@@ -364,7 +402,7 @@ function resultsCards(counts, total, label) {
 function lockedBox(title, message) {
   return `
     <div class="locked-box">
-      <div class="locked-icon">🔒</div>
+      <div class="locked-icon"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div>
       <h3>${esc(title)}</h3>
       <p style="font-size:13px">${esc(message)}</p>
       <div style="display:flex;gap:9px;justify-content:center;margin-top:18px;flex-wrap:wrap">
@@ -378,7 +416,7 @@ function renderResults() {
   const content = $('#resultsContent');
   if (adminAuthed && adminData) {
     content.innerHTML = `
-      <div class="notice notice-info" style="margin-bottom:16px"><span>ⓘ</span><div><strong>Pratinjau admin — data langsung.</strong> Publik melihat hasil yang diterbitkan: <strong>${esc(formatDate(adminData.config.publishedAt))}</strong>.</div></div>
+      <div class="notice notice-info" style="margin-bottom:16px"><span>i</span><div><strong>Pratinjau admin — data langsung.</strong> Publik melihat hasil yang diterbitkan: <strong>${esc(formatDate(adminData.config.publishedAt))}</strong>.</div></div>
       ${resultsCards(adminData.tally || {}, adminData.total || 0, 'Data langsung untuk panitia.')}`;
     return;
   }
@@ -402,7 +440,7 @@ function updateLoginNote() {
   const note = $('#loginSecurityNote');
   const sisa = adminData ? Math.max(0, 5 - (adminData.failedAttempts || 0)) : 5;
   note.classList.remove('locked');
-  note.innerHTML = `PIN awal: <strong>krian1</strong> — segera ubah. Sisa percobaan: <strong>${sisa}</strong>.`;
+  note.innerHTML = `Gunakan PIN yang diberikan panitia. Sisa percobaan: <strong>${sisa}</strong>.`;
 }
 
 async function loadAdmin() {
@@ -464,8 +502,8 @@ function renderAdmin() {
         <small>${esc(c.kelas || '—')} · ${adminData.tally?.[c.id] || 0} suara</small>
       </div>
       <div class="admin-paslon-actions">
-        <button class="icon-btn" data-edit="${esc(c.id)}" title="Ubah paslon">✎</button>
-        <button class="icon-btn del" data-delete="${esc(c.id)}" title="Hapus paslon">🗑</button>
+        <button class="btn btn-outline btn-sm" data-edit="${esc(c.id)}">Ubah</button>
+        <button class="btn btn-danger btn-sm" data-delete="${esc(c.id)}">Hapus</button>
       </div>
     </div>`).join('') || '<div class="empty">Belum ada paslon.</div>';
 
@@ -490,7 +528,18 @@ function paslonForm(id = null) {
       </div>
       <div class="field"><label>Visi</label><textarea id="candVisi" rows="2" maxlength="400">${esc(c?.visi || '')}</textarea></div>
       <div class="field"><label>Misi (satu baris per poin)</label><textarea id="candMisi" rows="3">${esc((c?.misi || []).join('\n'))}</textarea></div>
-      <div class="field"><label>URL foto atau data gambar (opsional)</label><input type="text" id="candFoto" maxlength="400000" value="${esc(c?.foto || '')}" placeholder="https://... atau data:image/..."></div>
+      <div class="field">
+        <label>Foto paslon (opsional, otomatis dikompres untuk HP)</label>
+        <input type="hidden" id="candFoto" value="${esc(c?.foto || '')}">
+        <div class="foto-upload">
+          <img id="fotoPreview" class="foto-preview" src="${esc(c?.foto || '')}" alt="Pratinjau foto paslon">
+          <div class="foto-actions">
+            <input type="file" id="candFotoFile" accept="image/png,image/jpeg,image/webp">
+            <small id="fotoInfo" class="foto-info">${c?.foto ? 'Foto saat ini sudah tersimpan.' : 'Pilih dari galeri/kamera. Maks. 8 MB, akan dikompres otomatis.'}</small>
+            <button type="button" class="btn btn-outline btn-sm" id="clearFotoBtn">Hapus foto</button>
+          </div>
+        </div>
+      </div>
       <div class="modal-actions">
         <button type="button" class="btn btn-outline" data-close-modal>Batal</button>
         <button type="submit" class="btn btn-primary">Simpan</button>
@@ -582,6 +631,17 @@ document.addEventListener('click', (e) => {
   const del = e.target.closest('[data-delete]');
   if (del) return deletePaslon(del.dataset.delete);
 
+  if (e.target.id === 'clearFotoBtn') {
+    const field = $('#candFoto');
+    const preview = $('#fotoPreview');
+    const file = $('#candFotoFile');
+    const info = $('#fotoInfo');
+    if (field) field.value = '';
+    if (preview) preview.removeAttribute('src');
+    if (file) file.value = '';
+    if (info) info.textContent = 'Foto dihapus. Pilih gambar baru jika diperlukan.';
+    return;
+  }
   if (e.target.id === 'refreshVoteCaptcha' || e.target.id === 'voteCaptcha') {
     return refreshCaptcha('vote').catch(() => toast('Gagal memuat captcha.', 'err'));
   }
@@ -619,6 +679,17 @@ document.addEventListener('click', (e) => {
 });
 
 document.addEventListener('change', (e) => {
+  if (e.target.id === 'candFotoFile') {
+    const file = e.target.files[0];
+    if (!file) return;
+    compressImage(file).then((data) => {
+      $('#candFoto').value = data;
+      $('#fotoPreview').src = data;
+      $('#fotoInfo').textContent = `Foto siap digunakan (${Math.round(data.length / 1024)} KB).`;
+      toast('Foto berhasil dikompres dan siap disimpan.', 'ok');
+    }).catch((err) => toast(err.message, 'err'));
+    return;
+  }
   if (e.target.name === 'candidateId') {
     $$('.paslon-card').forEach((card) => card.classList.toggle('selected', $('input', card).checked));
     if (draft) draft.candidateId = e.target.value;
@@ -677,8 +748,8 @@ window.addEventListener('hashchange', renderRoute);
     toast(err.message || 'Gagal memuat data.', 'err');
     $('#votingContent').innerHTML = `
       <div class="wizard-body">
-        <div class="notice notice-warn"><span>⚠</span><div><strong>Data belum tersedia.</strong> Server voting belum siap atau sedang gangguan. Silakan coba lagi beberapa saat.</div></div>
-        <div class="wizard-actions" style="justify-content:center"><button class="btn btn-outline" id="retryLoad">↻ Coba Lagi</button></div>
+        <div class="notice notice-warn"><span>!</span><div><strong>Data belum tersedia.</strong> Server voting belum siap atau sedang gangguan. Silakan coba lagi beberapa saat.</div></div>
+        <div class="wizard-actions" style="justify-content:center"><button class="btn btn-outline" id="retryLoad">Coba Lagi</button></div>
       </div>`;
   }
   renderRoute();
