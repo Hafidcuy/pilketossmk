@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Voting Pemilihan Ketua OSIS (Pilketos) SMK Krian 1 Sidoarjo.">
+  <meta name="theme-color" content="#192335">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'">
+  <title>Pilketos 2026 — SMK Krian 1 Sidoarjo</title>
+  <link rel="icon" type="image/png" href="assets/logo-skarisa.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="container topbar-inner">
+      <span><span class="topbar-dot"></span> Pemilihan Ketua OSIS · SMK KRIAN 1 SIDOARJO</span>
+      <a href="mailto:mail@smkkrian1.sch.id">mail@smkkrian1.sch.id</a>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#voting" aria-label="Ke halaman voting">
+        <img src="assets/logo-skarisa.png" alt="Logo SMK Krian 1 Sidoarjo">
+        <span class="brand-text"><strong>PILKETOS</strong><small>SMK Krian 1 Sidoarjo</small></span>
+      </a>
+      <nav class="main-nav" id="mainNav" aria-label="Navigasi utama">
+        <a href="#voting" data-route="voting">Voting</a>
+        <a href="#hasil" data-route="hasil">Hasil</a>
+        <a href="#admin" data-route="admin">Admin</a>
+      </nav>
+      <button class="menu-toggle" id="menuToggle" aria-label="Buka menu" aria-expanded="false">☰</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- ================= VOTING ================= -->
+    <section class="page active" id="page-voting">
+      <div class="container">
+        <div class="intro">
+          <span class="eyebrow">PILKETOS 2026</span>
+          <h1>Pilih Paslon Ketua OSIS</h1>
+          <p id="votingPeriodText">Pasangan calon siap memimpin SMK Krian 1 Sidoarjo.</p>
+          <div class="intro-note"><span>ⓘ</span> Isi identitas dengan benar. Satu identitas &amp; satu perangkat hanya bisa voting sekali.</div>
+        </div>
+
+        <div class="wizard">
+          <div class="wizard-progress">
+            <div class="wizard-step active" data-progress="1"><span>1</span> Identitas</div>
+            <div class="wizard-line"></div>
+            <div class="wizard-step" data-progress="2"><span>2</span> Pilih Paslon</div>
+            <div class="wizard-line"></div>
+            <div class="wizard-step" data-progress="3"><span>3</span> Selesai</div>
+          </div>
+          <div id="votingContent"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= HASIL ================= -->
+    <section class="page" id="page-hasil">
+      <div class="container">
+        <div class="intro center">
+          <span class="eyebrow">HASIL PEMILIHAN</span>
+          <h1>Leaderboard Pilketos</h1>
+          <p>Hasil ditampilkan sesuai pengaturan dan izin dari panitia.</p>
+        </div>
+        <div id="resultsContent"></div>
+      </div>
+    </section>
+
+    <!-- ================= ADMIN ================= -->
+    <section class="page" id="page-admin">
+      <div class="container">
+        <div class="intro center">
+          <span class="eyebrow">PANITIA PILKETOS</span>
+          <h1>Panel Admin</h1>
+          <p>Kelola paslon, izin leaderboard, dan data suara.</p>
+        </div>
+
+        <div id="adminLogin" class="admin-login">
+          <div class="login-icon">🔒</div>
+          <h3>Masuk ke Panel Admin</h3>
+          <p>Masukkan PIN admin untuk mengelola Pilketos.</p>
+          <form id="loginForm" class="login-form" autocomplete="off">
+            <input type="password" id="pinInput" placeholder="Masukkan PIN admin" autocomplete="off" required>
+            <div class="captcha-row">
+              <img id="loginCaptcha" width="160" height="46" alt="Kode captcha login" title="Klik untuk mengganti kode">
+              <button type="button" class="icon-btn" id="refreshLoginCaptcha" title="Ganti kode captcha" aria-label="Ganti kode captcha">↻</button>
+            </div>
+            <input type="text" id="loginCaptchaInput" placeholder="Masukkan kode captcha di atas" autocomplete="off" maxlength="8" required>
+            <button class="btn btn-primary" type="submit">Masuk</button>
+          </form>
+          <div class="login-note" id="loginSecurityNote">PIN awal: <strong>krian1</strong> — segera ubah di menu Pengaturan.</div>
+          <small>Jangan pernah bagikan PIN kepada siapa pun. Panitia tidak meminta PIN lewat pesan/dm.</small>
+        </div>
+
+        <div id="adminPanel" class="admin-panel hidden">
+          <div class="admin-toolbar">
+            <div class="admin-welcome"><span class="avatar-circle">A</span><div><strong>Halo, Panitia!</strong><small>Kamu sedang masuk sebagai admin.</small></div></div>
+            <button class="btn btn-outline btn-sm" id="adminLogout">Keluar</button>
+          </div>
+
+          <div class="admin-grid">
+            <div class="admin-card">
+              <div class="admin-card-head"><div><h3>Data Paslon</h3><p>Tambah, ubah, atau hapus pasangan calon.</p></div><button class="btn btn-primary btn-sm" id="addPaslonBtn">+ Tambah</button></div>
+              <div id="adminPaslonList" class="admin-list"></div>
+            </div>
+
+            <div class="admin-side">
+              <div class="admin-card">
+                <div class="admin-card-head"><div><h3>Pengaturan Voting</h3><p>Atur informasi dan izin hasil.</p></div></div>
+                <form id="settingsForm" class="admin-form">
+                  <label>Judul pemilihan<input type="text" id="cfgTitle" required></label>
+                  <label>Periode voting<input type="text" id="cfgPeriod"></label>
+                  <label class="switch-row"><span>Voting dibuka</span><input type="checkbox" id="cfgOpen"></label>
+                  <label class="switch-row"><span>Leaderboard dapat dilihat publik</span><input type="checkbox" id="cfgPublic"></label>
+                  <label>PIN admin baru (kosongkan jika tidak diubah)<input type="text" id="cfgPin" minlength="4"></label>
+                  <button class="btn btn-primary" type="submit">Simpan Pengaturan</button>
+                </form>
+              </div>
+
+              <div class="admin-card publish-card">
+                <div class="admin-card-head"><div><h3>Penerbitan Hasil</h3><p>Leaderboard publik memakai data yang sudah diterbitkan.</p></div></div>
+                <div class="publish-status" id="publishStatus">Belum ada hasil diterbitkan.</div>
+                <button class="btn btn-primary btn-block" id="publishBtn">Terbitkan / Perbarui Hasil</button>
+                <p class="danger-note">Perubahan suara baru tampil di leaderboard publik setelah tombol ini ditekan.</p>
+              </div>
+
+              <div class="admin-card danger-card">
+                <div class="admin-card-head"><div><h3>Data Suara</h3><p>Rekap langsung &amp; pengelolaan data.</p></div></div>
+                <div id="adminLiveRecap" class="live-recap"></div>
+                <div class="danger-actions">
+                  <button class="btn btn-outline btn-sm" id="exportBtn">↧ Ekspor Data (.json)</button>
+                  <button class="btn btn-danger btn-sm" id="resetVotesBtn">♻ Reset Semua Suara</button>
+                </div>
+                <p class="danger-note">Reset menghapus seluruh suara, membatalkan hasil terbit, dan membuka hak pilih kembali.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container security-strip"><span>🔒</span> Pastikan kamu membuka alamat website resmi sekolah. Jangan pernah membagikan PIN admin atau kode voting kepada pihak mana pun.</div>
+    <div class="container footer-bottom">
+      <span>© <span id="year"></span> SMK Krian 1 Sidoarjo · Website Pilketos</span>
+      <span><a href="#voting">Voting</a> · <a href="#hasil">Hasil</a> · <a href="#admin">Admin</a></span>
+    </div>
+  </footer>
+
+  <div class="modal-overlay hidden" id="modalOverlay" role="dialog" aria-modal="true">
+    <div class="modal-box" id="modalBox">
+      <button class="modal-close" id="modalClose" aria-label="Tutup">×</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+  <div class="toast-wrap" id="toastWrap" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
