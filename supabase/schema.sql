@@ -85,6 +85,17 @@ grant usage on schema public to service_role;
 grant all on all tables in schema public to service_role;
 grant all on all sequences in schema public to service_role;
 
+-- Policy RLS untuk service_role agar serverless functions selalu bisa mengakses data.
+do $$
+declare t text;
+begin
+  for t in select tablename from pg_tables where schemaname = 'public'
+  loop
+    execute format('drop policy if exists service_all on public.%I', t);
+    execute format('create policy service_all on public.%I for all to service_role using (true) with check (true)', t);
+  end loop;
+end $$;
+
 -- Data awal paslon (boleh diubah/dihapus lewat panel admin)
 insert into public.paslon (number, ketua, wakil, kelas, visi, misi)
 select 1, 'Nama Ketua 1', 'Nama Wakil 1', 'XI RPL 1',
