@@ -213,6 +213,7 @@ button { cursor: pointer; }
 .admin-paslon-info { flex: 1; min-width: 0; }
 .admin-paslon-info strong { display: block; color: var(--heading); font-size: 13px; }
 .admin-paslon-info small { font-size: 11px; color: #8c95a7; }
+.admin-paslon-actions { display: flex; gap: 6px; flex: none; }
 .icon-btn { width: 32px; height: 32px; border-radius: 8px; border: 1px solid #e2e7f0; background: #fff; color: #6b7385; display: grid; place-items: center; font-size: 13px; }
 .icon-btn:hover { border-color: var(--primary); color: var(--primary); }
 .admin-form { display: grid; gap: 13px; }
@@ -249,15 +250,69 @@ button { cursor: pointer; }
 .footer-bottom a:hover { color: #fff; }
 
 /* ---------- Responsive ---------- */
+@media (max-width: 980px) {
+  .container { width: min(940px, calc(100% - 28px)); }
+  .admin-grid { grid-template-columns: 1fr; }
+  .admin-side { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
 @media (max-width: 760px) {
-  .menu-toggle { display: grid; place-items: center; }
+  .container { width: calc(100% - 24px); }
+  .menu-toggle { display: grid; place-items: center; min-width: 44px; min-height: 44px; }
+  .brand img { height: 38px; }
   .main-nav { position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; background: #fff; border-bottom: 1px solid var(--line); box-shadow: 0 16px 28px rgba(0,0,0,.08); padding: 8px 18px 14px; display: none; }
   .main-nav.open { display: flex; }
+  .main-nav a { min-height: 46px; display: flex; align-items: center; font-size: 15px; }
   .topbar a { display: none; }
-  .paslon-grid, .admin-grid, .form-row, .results-summary { grid-template-columns: 1fr; }
-  .wizard-body, .results-card, .locked-box { padding: 20px; }
-  .wizard-line { width: 16px; }
+  .topbar-inner > span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .intro { padding: 32px 0 20px; }
+  .intro h1 { font-size: clamp(25px, 6.5vw, 34px); letter-spacing: -.5px; }
+  .intro-note { white-space: normal; line-height: 1.5; }
+  .paslon-grid, .form-row, .results-summary { grid-template-columns: 1fr; }
+  .admin-side { grid-template-columns: 1fr; }
+  .results-summary { gap: 10px; }
+  .wizard-body, .results-card, .locked-box { padding: 18px; }
+  .wizard-progress { padding: 14px 10px; gap: 7px; }
+  .wizard-line { width: 14px; }
   .wizard-step { font-size: 10.5px; gap: 5px; }
+  .btn { min-height: 44px; }
+  .btn-sm { min-height: 38px; }
+  .field input, .admin-form input, .admin-form textarea,
+  .login-form input, .captcha-row input { font-size: 16px; }
   .footer-bottom { flex-direction: column; }
-  .modal-box { padding: 22px; }
+  .security-strip { font-size: 11px; line-height: 1.5; }
+  .modal-box { padding: 20px; }
+  .modal-actions { flex-wrap: wrap; }
+  .modal-actions .btn { flex: 1 1 auto; }
+  .confirm-row { flex-wrap: wrap; }
+  .confirm-row strong { max-width: 60%; }
+  .admin-paslon-row { flex-wrap: wrap; }
+  .admin-paslon-actions { margin-left: auto; }
+  .result-top { flex-wrap: wrap; }
+}
+
+@media (max-width: 480px) {
+  .brand-text { display: none; }
+  .brand img { height: 34px; }
+  .topbar { font-size: 10.5px; }
+  .wizard-step { font-size: 0; gap: 0; }
+  .wizard-step span { font-size: 12px; width: 30px; height: 30px; }
+  .wizard-line { width: 20px; }
+  .paslon-main { padding: 13px; gap: 10px; }
+  .paslon-photo { width: 52px; height: 52px; border-radius: 12px; }
+  .paslon-info strong { font-size: 13.5px; }
+  .captcha-row img { width: 138px; height: 42px; }
+  .captcha-row .icon-btn { width: 42px; height: 42px; }
+  .summary-box { padding: 13px; }
+  .summary-ico { width: 38px; height: 38px; }
+  .result-avatar { width: 36px; height: 36px; }
+  .result-count strong { font-size: 15px; }
+  .receipt strong { font-size: 13px; }
+  .admin-card { padding: 17px; }
+  .admin-toolbar { padding: 15px; }
+  .footer-bottom { font-size: 10.5px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }

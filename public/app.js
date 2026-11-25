@@ -461,8 +461,10 @@ function renderAdmin() {
         <strong>${esc(paslonLabel(c))}</strong>
         <small>${esc(c.kelas || '—')} · ${adminData.tally?.[c.id] || 0} suara</small>
       </div>
-      <button class="icon-btn" data-edit="${esc(c.id)}" title="Ubah paslon">✎</button>
-      <button class="icon-btn del" data-delete="${esc(c.id)}" title="Hapus paslon">🗑</button>
+      <div class="admin-paslon-actions">
+        <button class="icon-btn" data-edit="${esc(c.id)}" title="Ubah paslon">✎</button>
+        <button class="icon-btn del" data-delete="${esc(c.id)}" title="Hapus paslon">🗑</button>
+      </div>
     </div>`).join('') || '<div class="empty">Belum ada paslon.</div>';
 
   $('#adminLiveRecap').innerHTML = list.map((c) => `
