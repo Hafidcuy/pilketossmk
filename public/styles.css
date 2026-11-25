@@ -20,22 +20,27 @@
   --shadow-lg: 0 30px 70px rgba(25, 35, 53, .16);
 }
 
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+*, *::before, *::after { box-sizing: border-box; min-width: 0; }
+html { scroll-behavior: smooth; max-width: 100%; }
 body {
-  margin: 0; min-height: 100vh;
+  margin: 0; min-height: 100vh; max-width: 100%; overflow-x: hidden;
   font-family: "Plus Jakarta Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
-  color: var(--body); background: var(--light); font-size: 15px; line-height: 1.65;
-  -webkit-font-smoothing: antialiased;
+  color: var(--body); background: var(--light);
+  font-size: clamp(13px, 0.35vw + 12px, 18px); line-height: 1.65;
+  overflow-wrap: anywhere; -webkit-font-smoothing: antialiased;
 }
 h1, h2, h3, h4 { color: var(--heading); font-weight: 800; line-height: 1.25; margin: 0 0 10px; }
 p { margin: 0 0 10px; }
 a { color: inherit; text-decoration: none; }
-img { max-width: 100%; display: block; }
-button, input, textarea { font: inherit; }
+img, svg, canvas, video { max-width: 100%; display: block; }
+button, input, textarea, select { font: inherit; max-width: 100%; }
 button { cursor: pointer; }
-.container { width: min(940px, calc(100% - 36px)); margin-inline: auto; }
+.container { width: min(1100px, calc(100% - clamp(12px, 5vw, 100px))); margin-inline: auto; }
 .hidden { display: none !important; }
+.loading-state { text-align: center; padding: 30px 10px; color: #98a0b0; font-size: 13px; }
+.loading-state::before { content: ""; display: block; width: 26px; height: 26px; margin: 0 auto 12px; border: 3px solid #e2e7f0; border-top-color: var(--primary); border-radius: 50%; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.paslon-info strong, .result-name strong, .confirm-row strong, .admin-paslon-info strong, .summary-box strong, .intro h1 { overflow-wrap: anywhere; }
 
 /* ---------- Topbar & header ---------- */
 .topbar { background: var(--darker); color: rgba(255,255,255,.75); font-size: 12px; }
@@ -327,4 +332,89 @@ button { cursor: pointer; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+
+/* ---------- Layar sangat kecil (smartwatch / wearable) ---------- */
+@media (max-width: 360px) {
+  .container { width: calc(100% - 14px); }
+  .topbar-inner > span { font-size: 9px; }
+  .header-inner { min-height: 56px; gap: 8px; }
+  .brand img { height: 30px; }
+  .intro { padding: 22px 0 14px; }
+  .intro h1 { font-size: 21px; }
+  .intro p { font-size: 12px; }
+  .intro-note { display: flex; width: 100%; font-size: 10.5px; }
+  .wizard-progress { padding: 10px 6px; gap: 4px; }
+  .wizard-line { width: 10px; }
+  .wizard-body { padding: 12px; }
+  .wizard-body h3 { font-size: 17px; }
+  .wizard-form { gap: 14px; }
+  .paslon-grid { gap: 10px; }
+  .paslon-main { padding: 10px; gap: 8px; }
+  .paslon-photo { width: 44px; height: 44px; border-radius: 10px; }
+  .paslon-info strong { font-size: 12px; }
+  .paslon-vision { font-size: 11px; padding: 0 10px 10px; }
+  .captcha-row { flex-wrap: wrap; }
+  .captcha-row img { width: 100%; max-width: 150px; height: auto; }
+  .captcha-row .btn { min-height: 36px; padding: 6px 10px; }
+  .btn { width: 100%; font-size: 12px; padding: 10px 12px; }
+  .wizard-actions { flex-direction: column-reverse; }
+  .wizard-actions .btn { width: 100%; }
+  .results-summary, .admin-grid, .form-row, .paslon-grid { grid-template-columns: 1fr; }
+  .summary-box { padding: 10px; }
+  .result-top { gap: 8px; }
+  .footer-bottom { font-size: 9px; }
+}
+
+@media (max-width: 240px) {
+  .topbar { display: none; }
+  .brand img { height: 26px; }
+  .main-nav a { padding: 8px 6px; font-size: 11px; }
+  .intro h1 { font-size: 18px; }
+  .wizard-step span { width: 22px; height: 22px; font-size: 10px; }
+  .wizard-line { width: 6px; }
+  .paslon-vision, .paslon-details { display: none; }
+  .paslon-main { padding: 8px; }
+  .paslon-photo { width: 36px; height: 36px; }
+  .security-strip { font-size: 9px; }
+  .receipt { padding: 8px 10px; }
+  .receipt strong { font-size: 11px; }
+}
+
+/* ---------- Layar besar (monitor, TV, proyektor, billboard) ---------- */
+@media (min-width: 1400px) {
+  .container { width: min(1280px, calc(100% - 120px)); }
+  .intro { padding: 68px 0 40px; }
+  .intro h1 { font-size: 52px; }
+  .intro p { font-size: 18px; }
+  .intro-note { font-size: 14px; }
+  .wizard-body { padding: 46px; }
+  .wizard-body h3 { font-size: 26px; }
+  .wizard-step { font-size: 15px; }
+  .field label, .admin-form label { font-size: 14px; }
+  .field input, .admin-form input, .admin-form textarea,
+  .login-form input, .captcha-row input { font-size: 17px; padding: 14px 16px; }
+  .btn { font-size: 16px; padding: 14px 26px; }
+  .btn-sm { font-size: 14px; padding: 10px 18px; }
+  .paslon-photo { width: 84px; height: 84px; }
+  .paslon-info strong { font-size: 19px; }
+  .paslon-vision { font-size: 15px; }
+  .result-name strong { font-size: 17px; }
+  .summary-box strong { font-size: 25px; }
+  .admin-card { padding: 28px; }
+}
+
+@media (min-width: 2200px) {
+  .container { width: min(1600px, calc(100% - 180px)); }
+  .intro { padding: 90px 0 56px; }
+  .intro h1 { font-size: 68px; }
+  .intro p { font-size: 22px; }
+  .wizard-body { padding: 60px; }
+  .wizard-body h3 { font-size: 32px; }
+  .paslon-photo { width: 104px; height: 104px; }
+  .paslon-info strong { font-size: 23px; }
+  .paslon-vision { font-size: 18px; }
+  .btn { font-size: 19px; padding: 17px 32px; }
+  .result-name strong { font-size: 21px; }
+  .summary-box strong { font-size: 30px; }
 }
