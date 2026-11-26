@@ -132,40 +132,15 @@ function formatDate(iso) {
   catch { return String(iso); }
 }
 
-/* Kompres foto di browser agar ringan untuk HP & upload cepat. */
-function compressImage(file) {
+/* Baca foto apa adanya — tanpa batas ukuran. */
+function readPhoto(file) {
   return new Promise((resolve, reject) => {
     if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
       return reject(new Error('Format foto harus PNG, JPG, atau WebP.'));
     }
-    if (file.size > 8 * 1024 * 1024) {
-      return reject(new Error('Foto sumber terlalu besar (maks. 8 MB).'));
-    }
     const reader = new FileReader();
     reader.onerror = () => reject(new Error('Gagal membaca berkas foto.'));
-    reader.onload = () => {
-      const img = new Image();
-      img.onerror = () => reject(new Error('Gambar tidak bisa dibuka.'));
-      img.onload = () => {
-        const max = 512;
-        const scale = Math.min(1, max / Math.max(img.width, img.height));
-        const width = Math.max(1, Math.round(img.width * scale));
-        const height = Math.max(1, Math.round(img.height * scale));
-        const canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, width, height);
-        ctx.drawImage(img, 0, 0, width, height);
-        const data = canvas.toDataURL('image/jpeg', 0.8);
-        if (data.length > 380000) {
-          return reject(new Error('Foto masih terlalu besar. Coba gambar yang lebih sederhana.'));
-        }
-        resolve(data);
-      };
-      img.src = reader.result;
-    };
+    reader.onload = () => resolve(reader.result);
     reader.readAsDataURL(file);
   });
 }
@@ -529,13 +504,13 @@ function paslonForm(id = null) {
       <div class="field"><label>Visi</label><textarea id="candVisi" rows="2" maxlength="400">${esc(c?.visi || '')}</textarea></div>
       <div class="field"><label>Misi (satu baris per poin)</label><textarea id="candMisi" rows="3">${esc((c?.misi || []).join('\n'))}</textarea></div>
       <div class="field">
-        <label>Foto paslon (opsional, otomatis dikompres untuk HP)</label>
+        <label>Foto paslon (opsional, ukuran bebas)</label>
         <input type="hidden" id="candFoto" value="${esc(c?.foto || '')}">
         <div class="foto-upload">
           <img id="fotoPreview" class="foto-preview" src="${esc(c?.foto || '')}" alt="Pratinjau foto paslon">
           <div class="foto-actions">
             <input type="file" id="candFotoFile" accept="image/png,image/jpeg,image/webp">
-            <small id="fotoInfo" class="foto-info">${c?.foto ? 'Foto saat ini sudah tersimpan.' : 'Pilih dari galeri/kamera. Maks. 8 MB, akan dikompres otomatis.'}</small>
+            <small id="fotoInfo" class="foto-info">${c?.foto ? 'Foto saat ini sudah tersimpan.' : 'Pilih dari galeri/kamera. Ukuran bebas.'}</small>
             <button type="button" class="btn btn-outline btn-sm" id="clearFotoBtn">Hapus foto</button>
           </div>
         </div>
@@ -682,11 +657,11 @@ document.addEventListener('change', (e) => {
   if (e.target.id === 'candFotoFile') {
     const file = e.target.files[0];
     if (!file) return;
-    compressImage(file).then((data) => {
+    readPhoto(file).then((data) => {
       $('#candFoto').value = data;
       $('#fotoPreview').src = data;
       $('#fotoInfo').textContent = `Foto siap digunakan (${Math.round(data.length / 1024)} KB).`;
-      toast('Foto berhasil dikompres dan siap disimpan.', 'ok');
+      toast('Foto siap disimpan.', 'ok');
     }).catch((err) => toast(err.message, 'err'));
     return;
   }

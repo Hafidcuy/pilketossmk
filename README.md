@@ -23,7 +23,7 @@ supabase/schema.sql→ skema tabel & RLS
 - **Login admin**: PIN di-hash dengan `scrypt` + salt unik; `timingSafeEqual`; rate-limit 5 gagal / 10 menit per IP; sesi httpOnly + Secure + SameSite=Lax berlaku 15 menit.
 - **CSRF**: header `X-Requested-With` + pengecekan Origin pada semua endpoint admin.
 - **Sanitasi & batas input** di server; semua output di-escape di frontend.
-- **Upload foto**: hanya `data:image/png|jpeg|webp`, maksimal ~250 KB.
+- **Upload foto**: hanya `data:image/png|jpeg|webp`, **tanpa batas ukuran**.
 - **RLS aktif** di semua tabel Supabase; frontend tidak pernah memakai service role key.
 - **Header keamanan** dari Vercel: HSTS, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy.
 

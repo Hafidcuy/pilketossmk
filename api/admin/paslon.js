@@ -8,7 +8,6 @@ function normalizeFoto(value) {
   const raw = String(value || '');
   if (raw.startsWith('data:image/')) {
     if (!/^data:image\/(png|jpeg|webp);base64,/.test(raw)) return '';
-    if (raw.length > 400000) return '';
     return raw;
   }
   return clean(raw, 300);
