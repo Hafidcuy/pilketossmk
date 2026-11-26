@@ -30,7 +30,8 @@ export default async function handler(req, res) {
     let settings = await getSettings(db);
     if (!settings.pin_hash) {
       const salt = newSalt();
-      const pin = process.env.ADMIN_INITIAL_PIN || 'krian1';
+      const pin = process.env.ADMIN_INITIAL_PIN;
+      if (!pin) throw new Error('ADMIN_INITIAL_PIN belum diatur di Environment Variables Vercel.');
       settings = await updateSettings(db, { pin_salt: salt, pin_hash: hashPin(pin, salt) });
     }
 

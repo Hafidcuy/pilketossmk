@@ -45,7 +45,7 @@ supabase/schema.sql→ skema tabel & RLS
 | `SUPABASE_URL` | URL project Supabase |
 | `SUPABASE_SERVICE_ROLE_KEY` | Service role key |
 | `SESSION_SECRET` | String acak minimal 32 karakter |
-| `ADMIN_INITIAL_PIN` | PIN pertama kali (default `krian1`), ubah lewat panel |
+| `ADMIN_INITIAL_PIN` | PIN pertama kali yang kamu tentukan sendiri (rahasia), ubah lewat panel |
 
 ## Deploy
 
