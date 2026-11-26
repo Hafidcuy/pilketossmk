@@ -41,7 +41,7 @@ export default async function handler(req, res) {
     }
 
     method(req, ['POST']);
-    const body = await readJson(req);
+    const body = await readJson(req, 25 * 1024 * 1024);
     const id = clean(body.id, 60);
     const data = {
       number: Number(body.number),
