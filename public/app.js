@@ -4,8 +4,6 @@
    ========================================================= */
 
 const ROUTES = ['voting', 'hasil', 'admin'];
-const RECEIPT_KEY = 'pilketos_receipt';
-
 let publicData = { config: {}, candidates: [], results: null };
 let adminData = null;
 let adminAuthed = false;
@@ -157,7 +155,7 @@ function setProgress(step) {
 function receiptBox(title, message, extra = '') {
   return `
     <div class="wizard-body">
-      <div class="${justVoted ? 'success-box' : 'already-box'}">
+      <div class="success-box">
         <div class="success-icon"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg></div>
         <h2>${esc(title)}</h2>
         <p>${esc(message)}</p>
@@ -165,7 +163,7 @@ function receiptBox(title, message, extra = '') {
         ${extra}
         <div class="wizard-actions" style="justify-content:center">
           <a href="#hasil" class="btn btn-primary">Lihat Hasil →</a>
-          <button class="btn btn-outline" data-go="voting">Kembali</button>
+          <button class="btn btn-outline" id="voteAgainBtn">Voting Lagi</button>
         </div>
       </div>
     </div>`;
@@ -178,15 +176,11 @@ function renderVoting() {
     `${cfg.title || 'Pilketos'} · ${publicData.candidates.length} paslon · Periode: ${cfg.period || '—'}`;
   const content = $('#votingContent');
 
-  const saved = receipt || sessionStorage.getItem(RECEIPT_KEY);
-  if (saved) {
-    receipt = saved;
+  if (receipt) {
     setProgress(3);
     return void (content.innerHTML = receiptBox(
-      justVoted ? 'Suara berhasil dikirim!' : 'Kamu sudah menggunakan hak pilihmu',
-      justVoted
-        ? 'Terima kasih telah menggunakan hak pilihmu dalam Pilketos SMK Krian 1 Sidoarjo.'
-        : 'Satu identitas & satu perangkat hanya dapat mengirim satu suara.',
+      'Suara berhasil dikirim!',
+      'Terima kasih telah menggunakan hak pilihmu. Perangkat ini dapat dipakai untuk identitas berikutnya.',
       draft ? `<p style="font-size:12.5px">Pilihanmu: <strong>${esc(paslonLabel(getCandidate(draft.candidateId) || { number: '?', ketua: 'Paslon' }))}</strong></p>` : ''
     ));
   }
@@ -299,6 +293,16 @@ function renderVoting() {
   renderVoting();
 }
 
+function resetForNewVote() {
+  receipt = null;
+  justVoted = false;
+  draft = null;
+  voteStep = 1;
+  renderVoting();
+  refreshCaptcha('vote').catch(() => {});
+  toast('Silakan isi identitas pemilih berikutnya.');
+}
+
 async function submitVoteStep1(form) {
   if (form.website.value) return toast('Pengiriman ditolak.', 'err');
   const nama = form.nama.value.trim();
@@ -331,7 +335,6 @@ async function confirmVote() {
     });
     receipt = data.receipt;
     justVoted = true;
-    sessionStorage.setItem(RECEIPT_KEY, receipt);
     voteStep = 3;
     renderVoting();
     await loadPublic();
@@ -577,7 +580,6 @@ function resetVotes() {
     await safeAdmin(async () => {
       await api('/api/admin/reset', { method: 'POST' });
       closeModal();
-      sessionStorage.removeItem(RECEIPT_KEY);
       receipt = null;
       justVoted = false;
       draft = null;
@@ -625,6 +627,7 @@ document.addEventListener('click', (e) => {
   }
   if (e.target.id === 'backVoteBtn') { voteStep = 1; renderVoting(); return; }
   if (e.target.id === 'confirmVoteBtn') return confirmVote();
+  if (e.target.id === 'voteAgainBtn') return resetForNewVote();
   if (e.target.id === 'adminLogout') return doLogout();
   if (e.target.id === 'addPaslonBtn') return paslonForm();
   if (e.target.id === 'publishBtn') {

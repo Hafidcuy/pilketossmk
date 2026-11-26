@@ -37,11 +37,6 @@ export default async function handler(req, res) {
     if (existing) return send(res, 409, { ok: false, error: 'Identitas ini sudah terdaftar memberikan suara.' });
 
     const ip = ipHash(req);
-    const since = new Date(Date.now() - 3000).toISOString();
-    const { count, error: cErr } = await db.from('votes')
-      .select('id', { count: 'exact', head: true }).eq('ip_hash', ip).gte('created_at', since);
-    if (cErr) throw cErr;
-    if (count > 0) return send(res, 429, { ok: false, error: 'Terlalu cepat. Tunggu beberapa detik.' });
 
     const suffix = (randomToken(4).replace(/[^A-Z0-9]/gi, '').toUpperCase() ||
       Math.random().toString(36).slice(2, 6).toUpperCase()).slice(0, 4);
